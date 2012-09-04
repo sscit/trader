@@ -1,0 +1,4 @@
+trader
+======
+
+Stock analyzer
