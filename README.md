@@ -1,4 +1,4 @@
 trader
 ======
 
-Stock analyzer
+Stock analyzer, first version.
