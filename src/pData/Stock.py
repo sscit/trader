@@ -11,7 +11,7 @@ class CStock(object):
         self.FinanztreffId = pFinanztreffId
         self.OnvistaId = pOnvistaId
         '''
-        falls marktkapitalisierung > X Mrd euro, dann zählt die firma als large cap, 
+        falls marktkapitalisierung > X Mrd euro, dann zaehlt die firma als large cap, 
         z.b. BMW ist ein large cap
         '''
         self.isLargeCap = isLargeCap 
