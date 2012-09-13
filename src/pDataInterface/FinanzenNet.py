@@ -7,6 +7,7 @@ from pTool.WebConnect import CWebConnect
 from datetime import timedelta, date
 import time, libxml2dom, datetime
 from pData.Stock import CStock
+import string
 
 class CFinanzenNet(object):
     
@@ -18,6 +19,8 @@ class CFinanzenNet(object):
         self.__FinanzenNetHistorischeKurseURL = "http://www.finanzen.net/kurse/kurse_historisch.asp"
         self.__FinanzenNetHistorischeKurseIndizesURL = "http://www.finanzen.net/index/XXX/Historisch"
         self.__UrlKBV = "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld="
+        self.__UrlEinzelwerteListePerIndex = "http://www.finanzen.net/index/XXX"
+        
         self.__POSTDataAktie = {'pkAktieNr' : 0,
                           'strBoerse' : '',
                           'dtTag1': 1,
@@ -37,6 +40,70 @@ class CFinanzenNet(object):
                           }
         
         self.__resetState()
+        
+    def getEinzelwerteListe(self, strIndex):
+        url = self.__UrlEinzelwerteListePerIndex.replace("XXX", strIndex)
+        
+        page = self.__webConnect.runGETRequest( url )
+        page = page.replace("<br>", " ").replace("<br/>", " ").replace("<br />", " ")
+                        
+        doc = libxml2dom.parseString(page, html=1)
+        td_elements = doc.getElementsByTagName("td")
+        
+        '''
+            durch alle td elemente laufen und schauen,ob irgendwo eine isin gefunden wurde. falls ja, ist das ein gueltiger eintrag
+        '''
+        
+        StockList = list()
+        
+        for i in td_elements:
+            data = i.textContent
+            
+            arr = data.rsplit()
+            
+            if len(arr) > 1 and self.__checkForISIN(arr[-1]) == 1:
+                s = CStock()
+                
+                s.ISIN = arr[-1]
+                s.Name = string.join(arr[0:-1])
+                StockList.append(s)
+            
+        if len(StockList) == 0:
+            raise NameError('Achtung: Aktienliste fuer ' + strIndex + ' hat keine Werte!')    
+            
+        return StockList
+        
+    def __checkForISIN(self, ISIN):
+                
+        if len(ISIN) != 12:
+            return 0
+        
+        ISINNew = str(ISIN)
+        letters = string.uppercase
+        index = range(0, len(letters))
+        
+        c= 10
+        for i in index:
+            ISINNew = ISINNew.replace( letters[i], str(c))
+            c = c + 1
+        
+        
+        if self.__checkLuhn(ISINNew) == 1:
+            return 1
+        else:
+            return 0    
+        
+        
+    def __checkLuhn(self, purportedCC=''):
+        summe = 0
+        parity = len(purportedCC) % 2
+        for i, digit in enumerate([int(x) for x in purportedCC]):
+            if i % 2 == parity:
+                digit *= 2
+            if digit > 9:
+                digit -= 9
+            summe += digit
+        return summe % 10 == 0 
     
     def __resetState(self):
         self.AktienkursHeute = 0
@@ -104,7 +171,7 @@ class CFinanzenNet(object):
         t1 = date.today()
         t2 = t1 - timedelta(days=380)
         
-        self.__POSTDataAktie["pkAktieNr"] = stock.FinanztreffId
+        self.__POSTDataAktie["pkAktieNr"] = stock.FinanzenNetId
         self.__POSTDataAktie["strBoerse"] = stock.strBoerseFinanzenNet
         
         self.__POSTDataAktie["dtTag1"] = t2.day
@@ -169,7 +236,7 @@ class CFinanzenNet(object):
         
     def __getKBV(self, stock):
                 
-        page = self.__webConnect.runGETRequest( self.__UrlKBV + str(stock.WKN) )
+        page = self.__webConnect.runGETRequest( self.__UrlKBV + str(stock.ISIN) )
         
         doc = libxml2dom.parseString(page, html=1)
         td_elements = doc.getElementsByTagName("td")
@@ -199,14 +266,9 @@ if __name__ == '__main__':
      
     d = CStock("BASF11", "BASF", 59905, 81490, 1, "FSE", "DAX")
     
-    xx.parseFinanzenNet(d)
+    a = xx.getEinzelwerteListe("DAX")
     
-    print "index aug " + str(xx.IndexList[0])
-    print "index sept " + str(xx.IndexList[1])
+    b=1
     
-    '''
-    TODO
-     mit den gewonnenen daten aus finanzen.net die indikatoren fuer die historischen kurse ausrechnen, der vergleich
-     ausserdem testfaelle fuer finanzen.net machen, das die historischen kurse immer richtig abgerufen werden!
-    '''
+    
     
