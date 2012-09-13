@@ -13,35 +13,44 @@ necessary packages:
 '''
 from pImport.ImporterDummy import CImporterDummy
 from Slave import CSlave
+from pPresenter.PresenterConsole import CPresenterConsole
 
+from pIndicator.Indicator3MonatsReversal import CIndicator3MonatsReversal
 from pIndicator.IndicatorEbit import CIndicatorEbit
 from pIndicator.IndicatorEigenkapital import CIndicatorEigenkapital
 from pIndicator.IndicatorEKR import CIndicatorEKR
+from pIndicator.IndicatorKBV import CIndicatorKBV
 from pIndicator.IndicatorKGV import CIndicatorKGV, CIndicatorKGVMean
+from pIndicator.IndicatorKursmomentum import CIndicatorKursMomentum
+from pIndicator.IndicatorKursVor12M import CIndicatorKursVor12M
+from pIndicator.IndicatorKursVor6M import CIndicatorKursVor6M
 
 if __name__ == '__main__':
     
     imp = CImporterDummy()
+    present = CPresenterConsole()
     sl = CSlave()
     
     listIndicator = list()
-    #listIndicator.append( CIndicatorEbit() )
-    #listIndicator.append( CIndicatorEigenkapital() )
-    #listIndicator.append( CIndicatorEKR() )
+    listIndicator.append( CIndicator3MonatsReversal() )
+    listIndicator.append( CIndicatorEbit() )
+    listIndicator.append( CIndicatorEigenkapital() )
+    listIndicator.append( CIndicatorEKR() )
+    listIndicator.append( CIndicatorKBV() )
     listIndicator.append( CIndicatorKGV() )
-    #listIndicator.append( CIndicatorKGVMean() )
+    listIndicator.append( CIndicatorKGVMean() )
+    listIndicator.append ( CIndicatorKursMomentum() )
+    listIndicator.append ( CIndicatorKursVor12M() )
+    listIndicator.append ( CIndicatorKursVor6M() )
     
-    sl.run(imp, listIndicator)
+    sl.run(imp, listIndicator, present)
     
     
     '''
         TODO
-       
-        - nacheinander die indikatorklassen erstellen
-        - auch ein interface fuer finanzen.net schreiben, fuer den POST kram
-        
-        - presenter schreiben
-        - weitere importer schreiben
+              
+        - weitere presenter schreiben (z.b. excel)
+        - weitere importer schreiben (excel, aus finanzen.net einzelwerte liste
         
         - TESTS machen, welche alle indikatoren testen und die einzelnen interface klassen
         

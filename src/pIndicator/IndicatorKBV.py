@@ -3,16 +3,16 @@ Created on 25.08.2012
 
 @author: Stefan
 
-This indicator evaluates Eigenkapitalrendite / RoE for the current year
+This indicator evaluates KBV for the current year
 '''
 from pIndicator.Indicator import CIndicator
-from pDataInterface.Onvista import COnvista
+from pDataInterface.FinanzenNet import CFinanzenNet
 
-class CIndicatorEKR(CIndicator):
+class CIndicatorKBV(CIndicator):
 
     def __init__(self):
         CIndicator.__init__(self)
-        self.__Onvista = COnvista()
+        self.__FinanzenNet = CFinanzenNet()
         self.__StockDict = dict()
         self._Name = str(self.__class__)
         
@@ -23,23 +23,23 @@ class CIndicatorEKR(CIndicator):
         '''
         
         if stock in self.__StockDict:
-            ekr = self.__StockDict[stock]
-        else:
-            ekr = self.__Onvista.getEKRAktJahrProzent(stock)
-            self.__StockDict[stock] = ekr
+            kbv= self.__StockDict[stock]
+        else:    
+            self.__FinanzenNet.parseFinanzenNet(stock)
+            kbv = self.__FinanzenNet.KBV
+            self.__StockDict[stock] = kbv
         
         result = 0
         
-        if ekr > 20:
+        if kbv < 0.6:
+            result = 2
+        elif (kbv < 0.9 and kbv >= 0.6):
             result = 1
-        elif (ekr >= 10 and ekr <= 20):
+        elif (kbv < 1.3 and kbv >= 0.9):
             result = 0
         else:
             result = -1
         
         
         return result
-        
-        
-        
     

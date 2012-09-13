@@ -6,14 +6,15 @@ Created on 25.08.2012
 This indicator evaluates KGV for the current year and the mean of the last 5 years
 '''
 from pIndicator.Indicator import CIndicator
-from pData.Stock import CStock
 from pDataInterface.Onvista import COnvista
 
 class CIndicatorKGVMean(CIndicator):
 
     def __init__(self):
+        CIndicator.__init__(self)
         self.__Onvista = COnvista()
         self.__StockDict = dict()
+        self._Name = str(self.__class__)
         
     def getPoints(self, stock):    
         
@@ -22,10 +23,10 @@ class CIndicatorKGVMean(CIndicator):
         '''
         
         if stock in self.__StockDict:
-            return self.__StockDict[stock]
-            
-        ekr = self.__Onvista.getKGVMean5Years(stock)
-        self.__StockDict[stock] = ekr
+            ekr = self.__StockDict[stock]
+        else:
+            ekr = self.__Onvista.getKGVMean5Years(stock)
+            self.__StockDict[stock] = ekr
         
         result = 0
         
@@ -42,8 +43,10 @@ class CIndicatorKGVMean(CIndicator):
 class CIndicatorKGV(CIndicator):
 
     def __init__(self):
+        CIndicator.__init__(self)
         self.__Onvista = COnvista()
         self.__StockDict = dict()
+        self._Name = str(self.__class__)
         
     def getPoints(self, stock):    
         

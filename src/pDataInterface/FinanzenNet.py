@@ -17,6 +17,7 @@ class CFinanzenNet(object):
         
         self.__FinanzenNetHistorischeKurseURL = "http://www.finanzen.net/kurse/kurse_historisch.asp"
         self.__FinanzenNetHistorischeKurseIndizesURL = "http://www.finanzen.net/index/XXX/Historisch"
+        self.__UrlKBV = "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld="
         self.__POSTDataAktie = {'pkAktieNr' : 0,
                           'strBoerse' : '',
                           'dtTag1': 1,
@@ -34,6 +35,8 @@ class CFinanzenNet(object):
                           'dtMonat2': 7,
                           'dtJahr2' : 2003
                           }
+        
+        self.__resetState()
     
     def __resetState(self):
         self.AktienkursHeute = 0
@@ -45,13 +48,14 @@ class CFinanzenNet(object):
             vor letzter monat: dax wert von ende juli/anfang august
             vorvorletzter monat: dax wert von ende juni/anfang august
         '''
-        self.IndexLetzterMonat = 0
-        self.IndexVorLetzterMonat = 0
-        self.IndexVorVorLetzterMonat = 0
+        '''
+        Enthaelt den Indexwert vom Ende letzten Monat, Ende vorletzten Monat, vorvorletzten Monat etc. 
+        '''
+        self.IndexList = [0,0,0,0]
+                
+        self.AktieList = [0,0,0,0]
         
-        self.AktieLetzterMonat = 0
-        self.AktieVorLetzterMonat = 0
-        self.AktieVorVorLetzterMonat = 0
+        self.KBV = 0
         
     def __getDataForIndex(self, stock):
         t1 = date.today()
@@ -84,18 +88,15 @@ class CFinanzenNet(object):
                     um die werte zu setzen
                 '''
      
-                LetzterMonat = date.today() - timedelta(date.today().day)
-                VorletzterMonat = LetzterMonat - timedelta(LetzterMonat.day)
-                VorVorletzterMonat = VorletzterMonat - timedelta(VorletzterMonat.day)    
+                DatumList= []    
+                DatumList.append( date.today() - timedelta(date.today().day) )
+                DatumList.append( DatumList[0] - timedelta(DatumList[0].day) )
+                DatumList.append( DatumList[1] - timedelta(DatumList[1].day) )   
+                DatumList.append( DatumList[2] - timedelta(DatumList[2].day) )
                 
-                if( self.IndexLetzterMonat == 0 and datum <= LetzterMonat  ):
-                    self.IndexLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
-                                    
-                if( self.IndexVorLetzterMonat == 0 and datum <= VorletzterMonat  ):
-                    self.IndexVorLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
-                    
-                if( self.IndexVorVorLetzterMonat == 0 and datum <= VorVorletzterMonat ):
-                    self.IndexVorVorLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
+                for i in [0,1,2,3]:
+                    if( self.IndexList[i] == 0 and datum <= DatumList[i]  ):
+                        self.IndexList[i] = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
                 
             c = c + 1
     
@@ -138,18 +139,15 @@ class CFinanzenNet(object):
                 if( self.AktienkursVor12Monaten == 0 and datum <= date.today() - timedelta(days=360) ):
                     self.AktienkursVor12Monaten = float( td_elements[c+2].textContent.replace(",", ".") )
       
-                LetzterMonat = date.today() - timedelta(date.today().day)
-                VorletzterMonat = LetzterMonat - timedelta(LetzterMonat.day)
-                VorVorletzterMonat = VorletzterMonat - timedelta(VorletzterMonat.day)    
+                DatumList= []    
+                DatumList.append( date.today() - timedelta(date.today().day) )
+                DatumList.append( DatumList[0] - timedelta(DatumList[0].day) )
+                DatumList.append( DatumList[1] - timedelta(DatumList[1].day) )   
+                DatumList.append( DatumList[2] - timedelta(DatumList[2].day) )
                 
-                if( self.AktieLetzterMonat == 0 and datum <= LetzterMonat  ):
-                    self.AktieLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
-                                    
-                if( self.AktieVorLetzterMonat == 0 and datum <= VorletzterMonat  ):
-                    self.AktieVorLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
-                    
-                if( self.AktieVorVorLetzterMonat == 0 and datum <= VorVorletzterMonat ):
-                    self.AktieVorVorLetzterMonat = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )    
+                for i in [0,1,2,3]:
+                    if( self.AktieList[i] == 0 and datum <= DatumList[i]  ):
+                        self.AktieList[i] = float( td_elements[c+2].textContent.replace(".", "").replace(",", ".") )
                 
             c = c + 1    
         
@@ -160,6 +158,30 @@ class CFinanzenNet(object):
         
         self.__getDataForIndex(stock)
         
+        self.__getKBV(stock)
+        
+    def getKBV(self, stock):
+        self.__resetState()
+        
+        self.__getKBV(stock)
+        
+        return self.KBV
+        
+    def __getKBV(self, stock):
+                
+        page = self.__webConnect.runGETRequest( self.__UrlKBV + str(stock.WKN) )
+        
+        doc = libxml2dom.parseString(page, html=1)
+        td_elements = doc.getElementsByTagName("td")
+        
+        c = 0
+        for i in td_elements:
+            data = i.textContent
+            
+            if self.KBV == 0 and data.find("KBV") > -1 and data.find("title=\"Kurs/Buchungs"):
+                self.KBV = float( td_elements[c+1].textContent.replace(",", ".") )
+                
+            c = c + 1
       
     def __validateDate(self, datum):
         result= 1
@@ -179,12 +201,12 @@ if __name__ == '__main__':
     
     xx.parseFinanzenNet(d)
     
-    print "kurs heute " + xx.AktienkursHeute
-    print "kurs heute " + xx.AktienkursHeute
+    print "index aug " + str(xx.IndexList[0])
+    print "index sept " + str(xx.IndexList[1])
     
     '''
     TODO
-     mit den gewonnenen daten aus finanzen.net die indikatoren für die historischen kurse ausrechnen, der vergleich
-     außerdem testfälle für finanzen.net machen, das die historischen kurse immer richtig abgerufen werden!
+     mit den gewonnenen daten aus finanzen.net die indikatoren fuer die historischen kurse ausrechnen, der vergleich
+     ausserdem testfaelle fuer finanzen.net machen, das die historischen kurse immer richtig abgerufen werden!
     '''
     

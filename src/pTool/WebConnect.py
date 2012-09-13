@@ -37,12 +37,14 @@ class CWebConnect(object):
             key = pageUrl + json.dumps(postData)
             
             if( key in self.__mapUrlsToPageContent ):
-                return self.__mapUrlsToPageContent[pageUrl]
+                return self.__mapUrlsToPageContent[key]
             
             data = urllib.urlencode(postData)          
             req = urllib2.Request(pageUrl, data)
             response = urllib2.urlopen(req)
             the_page = response.read() 
+           
+            self.__mapUrlsToPageContent[key] = the_page
            
             return the_page
         

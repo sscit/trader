@@ -6,14 +6,15 @@ Created on 25.08.2012
 This indicator evaluates EBIT marge for the current year
 '''
 from pIndicator.Indicator import CIndicator
-from pData.Stock import CStock
 from pDataInterface.Onvista import COnvista
 
 class CIndicatorEbit(CIndicator):
 
     def __init__(self):
+        CIndicator.__init__(self)
         self.__Onvista = COnvista()
         self.__StockDict = dict()
+        self._Name = str(self.__class__)
         
     def getPoints(self, stock):    
         
@@ -22,11 +23,10 @@ class CIndicatorEbit(CIndicator):
         '''
         
         if stock in self.__StockDict:
-            return self.__StockDict[stock]
-            
-        ekr = self.__Onvista.getEbitMargeAktJahrProzent(stock)
-        
-        self.__StockDict[stock] = ekr
+            ekr= self.__StockDict[stock]
+        else:    
+            ekr = self.__Onvista.getEbitMargeAktJahrProzent(stock)
+            self.__StockDict[stock] = ekr
         
         result = 0
         
