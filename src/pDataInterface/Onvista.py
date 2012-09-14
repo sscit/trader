@@ -6,7 +6,7 @@ Created on 01.09.2012
 @author: Stefan
 '''
 import libxml2dom
-
+import string, traceback
 
 from pTool.WebConnect import CWebConnect
 from pData.Stock import CStock
@@ -17,6 +17,7 @@ class COnvista(object):
 
     def __init__(self):
         self.__OnvistaFundamentaldatenTabelleUrl = "http://www.onvista.de/aktien/kennzahlen/fundamental.html?ID_OSI="
+        self.__StockOverviewUrl = "http://www.onvista.de/aktien/suche.html?SEARCH_VALUE="
                
         self.__EKRAktJahrProzent = 0
         self.__EbitMargeAktJahrProzent = 0
@@ -25,7 +26,30 @@ class COnvista(object):
         self.__KGVAktJahr = 0
         self.__KBVAktJahr = 0
         self.__DivRenditeAktJahrProzent = 0
+        self.__MarktkapitalisierungInEuro = 0
         
+    def getOnvistaId(self, stock):
+        page = self.__webConnect.runGETRequest( self.__StockOverviewUrl + str(stock.ISIN) )
+        
+        onvistaId = ""
+        
+        doc = libxml2dom.parseString(page, html=1)
+        a_elements = doc.getElementsByTagName("a")
+        
+        for i in a_elements:
+            if i.textContent == "Kennzahlen" and "kennzahlen/fundamental.html?ID_OSI" in i.attributes["href"].value:
+                url = i.attributes["href"].value
+                onvistaId = str(url.split("=")[1])
+                break
+        
+        if onvistaId.isdigit() == False:
+            raise NameError('Error: getOnvistaId, Id nicht numeric: ' + onvistaId)
+        
+        return onvistaId 
+        
+    def getMarktkapitalisierungInEuro(self, stock):
+        self.__parseOnvistaSummary(stock)            
+        return self.__MarktkapitalisierungInEuro
                 
     def getEKRAktJahrProzent(self, stock):
         self.__parseOnvistaSummary(stock)
@@ -66,23 +90,59 @@ class COnvista(object):
         c = 0
         for i in td_elements:
             data = i.textContent
-            if (data == "Dividendenrendite in %"):
-                self.__DivRenditeAktJahrProzent = float( td_elements[c+1].textContent.replace(",", ".") )
-            if (data == u"Kurs-Buchwert-Verhältnis"):
-                self.__KBVAktJahr = float( td_elements[c+1].textContent.replace(",", ".") )
-            if (data == "KGV"):
-                self.__KGVAktJahr = float( td_elements[c+1].textContent.replace(",", ".") )
-                
-                summe = 0
-                for j in {1,2,3,4,5}:
-                    summe += float(td_elements[c+j].textContent.replace(",",".")) 
-                self.__KGVMean5Years = summe / 5
-            if (data == "Eigenkapitalquote in %"):
-                self.__EigenkapitalquoteAktJahrProzent = float( td_elements[c+1].textContent.replace(",", ".") )
-            if (data == "EBIT-Marge in %"):
-                self.__EbitMargeAktJahrProzent = float( td_elements[c+1].textContent.replace("%", "").replace(",", ".") )
-            if (data == "Eigenkapitalrendite in %"):
-                self.__EKRAktJahrProzent = float( td_elements[c+1].textContent.replace("%", "").replace(",", ".") )
+            try:
+                if (data == "Marktkap.:"):
+                    try:
+                        tmp = float(td_elements[c+1].textContent.replace(".", "").replace(",",".").replace(" Mio EUR",""))
+                        self.__MarktkapitalisierungInEuro = tmp*1000 * 1000
+                    except ValueError:
+                        self.__MarktkapitalisierungInEuro = "NA"
+                        
+                if (data == "Dividendenrendite in %"):
+                    try:
+                        self.__DivRenditeAktJahrProzent = float( td_elements[c+1].textContent.replace(",", ".") )
+                    except ValueError:
+                        self.__DivRenditeAktJahrProzent = "NA"
+                    
+                if (data == u"Kurs-Buchwert-Verhältnis"):
+                    try:
+                        self.__KBVAktJahr = float( td_elements[c+1].textContent.replace(",", ".") )
+                    except ValueError:
+                        self.__KBVAktJahr = "NA"
+                        
+                if (data == "KGV"):
+                    try:
+                        self.__KGVAktJahr = float( td_elements[c+1].textContent.replace(",", ".") )
+                        
+                        summe = 0
+                        for j in {1,2,3,4,5}:
+                            summe += float(td_elements[c+j].textContent.replace(",",".")) 
+                        self.__KGVMean5Years = summe / 5
+                    except ValueError:
+                        self.__KGVMean5Years = "NA"
+                        self.__KGVAktJahr = "NA"
+                        
+                if (data == "Eigenkapitalquote in %"):
+                    try:
+                        self.__EigenkapitalquoteAktJahrProzent = float( td_elements[c+1].textContent.replace(",", ".") )
+                    except ValueError:
+                        self.__EigenkapitalquoteAktJahrProzent= "NA"
+                        
+                if (data == "EBIT-Marge in %"):
+                    try:
+                        self.__EbitMargeAktJahrProzent = float( td_elements[c+1].textContent.replace("%", "").replace(",", ".") )
+                    except ValueError:
+                        self.__EbitMargeAktJahrProzent = "NA"
+                        
+                if (data == "Eigenkapitalrendite in %"):
+                    try:
+                        self.__EKRAktJahrProzent = float( td_elements[c+1].textContent.replace("%", "").replace(",", ".") )
+                    except ValueError:
+                        self.__EKRAktJahrProzent = "NA"
+                        
+            except ValueError, e:
+                traceback.print_exc()
+                raise ValueError("Error parseOnvistaSummary, Stock " + stock.Name + ", ISIN " + stock.ISIN)
                 
             c = c + 1
             
@@ -92,11 +152,7 @@ if __name__ == '__main__':
      
     d = CStock("BASF11", "BASF", 59905, 81490)
      
-    print "ekr " + xx.getEKRAktJahrProzent(d)
-    print "ebit marge " + xx.getEbitMargeAktJahrProzent(d)
-    print "eigenkapital " + xx.getEigenkapitalquoteAktJahrProzent(d)
-    print "kgv mean " + str(xx.getKGVMean5Years(d))
-    print "kgv akt jahr " + xx.getKGVAktJahr(d)
-    print "kbv " + xx.getKBVAktJahr(d)
+    print "marktkap  " + str(xx.getMarktkapitalisierungInEuro(d))
+    print "id " + str(xx.getOnvistaId(d))
 
         

@@ -22,6 +22,7 @@ class CIndicatorEbit(CIndicator):
         check if this stock has already been processed
         '''
         
+        
         if stock in self.__StockDict:
             ekr= self.__StockDict[stock]
         else:    
@@ -30,7 +31,10 @@ class CIndicatorEbit(CIndicator):
         
         result = 0
         
-        if ekr > 12:
+        if ekr == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif ekr > 12:
             result = 1
         elif (ekr >= 6 and ekr <= 12):
             result = 0

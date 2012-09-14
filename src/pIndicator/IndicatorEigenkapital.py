@@ -30,7 +30,10 @@ class CIndicatorEigenkapital(CIndicator):
         
         result = 0
         
-        if ekr > 25:
+        if ekr == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif ekr > 25:
             result = 1
         elif (ekr >= 15 and ekr <= 25):
             result = 0

@@ -6,30 +6,38 @@ Created on 25.08.2012
 from Importer import CImporter
 from pData.Stock import CStock
 from pDataInterface.FinanzenNet import CFinanzenNet
+from pDataInterface.Onvista import COnvista
+from pImport.Importer import CImporter
 
 class CImporterDAX(CImporter):
 
     def __init__(self):
         self.__FN = CFinanzenNet()
+        self.__Onvista= COnvista()
         self.__StockList = list()
         
-        self.__templateStock = CStock()
-        
-        self.__templateStock.strIndexFinanzenNet = "DAX"
-        self.__templateStock.strBoerseFinanzenNet = "FSE"
+        self.__AnzahlAktienInIndex = 30
+        self.__strIndexFinanzenNet = "DAX"
+        self.__strBoerseFinanzenNet = "FSE"
         
     def getListOfStocks(self):
         
-        self.__StockList = self.__FN.getEinzelwerteListe(self.__templateStock.strIndexFinanzenNet)
+        self.__StockList = self.__FN.getEinzelwerteListe(self.__strIndexFinanzenNet)
+        
+        self.validateListeLaenge(self.__StockList, 30, "DAX")
         
         for i in self.__StockList:
-            i.strBoerseFinanzenNet =  self.__templateStock.strBoerseFinanzenNet
-            i.strIndexFinanzenNet = self.__templateStock.strIndexFinanzenNet
-            
+            i.strBoerseFinanzenNet =  self.__strBoerseFinanzenNet
+            i.strIndexFinanzenNet = self.__strIndexFinanzenNet
+            i.FinanzenNetId = self.__FN.getFinanzenNetId(i)
+            i.OnvistaId = self.__Onvista.getOnvistaId(i)
+            mkap = self.__Onvista.getMarktkapitalisierungInEuro(i)
+            if mkap > 5*pow(10,9):
+                i.isLargeCap = True
+            else:
+                i.isLargeCap= False
         
-        
-        
-        
+                
         return self.__StockList
     
 
@@ -49,5 +57,4 @@ if __name__ == '__main__':
     -- dazu einfach mit den ISINs die einzelnen seiten der aktien aufrufen und die info extrahieren
     -- is large cap am besten aus marktkapitalisierung onvista auslesen
     - excehption handling ergaenzen, bei fatalen fehlern
-
-        
+    '''

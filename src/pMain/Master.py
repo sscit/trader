@@ -50,7 +50,8 @@ if __name__ == '__main__':
         TODO
               
         - weitere presenter schreiben (z.b. excel)
-        - weitere importer schreiben (excel, aus finanzen.net einzelwerte liste
+        - mal schauen, dass die DAX werte komplett durch den workflow gehen und hinten ausgegeben werden, mit irehn punkten
+        
         
         - TESTS machen, welche alle indikatoren testen und die einzelnen interface klassen
         

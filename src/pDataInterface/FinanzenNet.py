@@ -7,7 +7,7 @@ from pTool.WebConnect import CWebConnect
 from datetime import timedelta, date
 import time, libxml2dom, datetime
 from pData.Stock import CStock
-import string
+import string, traceback
 
 class CFinanzenNet(object):
     
@@ -40,6 +40,25 @@ class CFinanzenNet(object):
                           }
         
         self.__resetState()
+        
+    def getFinanzenNetId(self, stock):
+        url= self.__UrlKBV + stock.ISIN
+        page = self.__webConnect.runGETRequest( url )
+        finanzenNetId = ""
+        
+        doc = libxml2dom.parseString(page, html=1)
+        a_elements = doc.getElementsByTagName("a")
+        
+        for i in a_elements:
+            if i.textContent == "Historisch" and "kurse_historisch.asp" in i.attributes["href"].value:
+                url = i.attributes["href"].value
+                finanzenNetId = str(url.split("=")[1].split("&")[0])
+                break
+        
+        if finanzenNetId.isdigit() == False:
+            raise NameError('Error: getFinanzenNetId, Id nicht numeric: ' + finanzenNetId)
+        
+        return finanzenNetId     
         
     def getEinzelwerteListe(self, strIndex):
         url = self.__UrlEinzelwerteListePerIndex.replace("XXX", strIndex)
@@ -266,7 +285,7 @@ if __name__ == '__main__':
      
     d = CStock("BASF11", "BASF", 59905, 81490, 1, "FSE", "DAX")
     
-    a = xx.getEinzelwerteListe("DAX")
+    a = xx.getFinanzenNetId(d)
     
     b=1
     

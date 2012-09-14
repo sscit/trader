@@ -31,7 +31,10 @@ class CIndicatorKBV(CIndicator):
         
         result = 0
         
-        if kbv < 0.6:
+        if kbv == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif kbv < 0.6:
             result = 2
         elif (kbv < 0.9 and kbv >= 0.6):
             result = 1

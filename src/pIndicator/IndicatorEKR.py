@@ -30,7 +30,10 @@ class CIndicatorEKR(CIndicator):
         
         result = 0
         
-        if ekr > 20:
+        if ekr == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif ekr > 20:
             result = 1
         elif (ekr >= 10 and ekr <= 20):
             result = 0

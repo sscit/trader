@@ -30,7 +30,10 @@ class CIndicatorKGVMean(CIndicator):
         
         result = 0
         
-        if ekr < 12:
+        if ekr == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif ekr < 12:
             result = 1
         elif (ekr >= 12 and ekr <= 16):
             result = 0
@@ -62,7 +65,10 @@ class CIndicatorKGV(CIndicator):
         
         result = 0
         
-        if ekr < 12:
+        if ekr == "NA":
+            result = 0
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+        elif ekr < 12:
             result = 1
         elif (ekr >= 12 and ekr <= 16):
             result = 0
