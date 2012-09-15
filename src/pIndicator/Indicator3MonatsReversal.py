@@ -13,9 +13,8 @@ class CIndicator3MonatsReversal(CIndicator):
         
     def getPoints(self, stock):    
         
-        '''
-        check if this stock has already been processed
-        '''
+        if stock.isLargeCap == False:
+            return 0
         
         if stock in self.__StockDict:
             return self.__StockDict[stock]

@@ -12,6 +12,7 @@ necessary packages:
 
 '''
 from pImport.ImporterDummy import CImporterDummy
+from pImport.ImporterDAX import CImporterDAX
 from Slave import CSlave
 from pPresenter.PresenterConsole import CPresenterConsole
 
@@ -27,7 +28,7 @@ from pIndicator.IndicatorKursVor6M import CIndicatorKursVor6M
 
 if __name__ == '__main__':
     
-    imp = CImporterDummy()
+    imp = CImporterDAX()
     present = CPresenterConsole()
     sl = CSlave()
     
@@ -50,8 +51,10 @@ if __name__ == '__main__':
         TODO
               
         - weitere presenter schreiben (z.b. excel)
-        - mal schauen, dass die DAX werte komplett durch den workflow gehen und hinten ausgegeben werden, mit irehn punkten
-        
+        -- die asugabe soll als schöne excel tabelle geschrieben werden, mit den punkten für alle Indikatoren
+        - restliche indikatoren machen
+        . auch andere indizes mit reinbringen
+        - mal alle indikatoren durchgehen und genau dokumentieren und verstehen, was die jetzt eigentlich machen
         
         - TESTS machen, welche alle indikatoren testen und die einzelnen interface klassen
         

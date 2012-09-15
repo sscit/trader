@@ -33,7 +33,7 @@ class CIndicatorEbit(CIndicator):
         
         if ekr == "NA":
             result = 0
-            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfuegbar"
         elif ekr > 12:
             result = 1
         elif (ekr >= 6 and ekr <= 12):

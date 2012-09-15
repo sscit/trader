@@ -51,10 +51,4 @@ if __name__ == '__main__':
     b=1
     
     
-    ''' TODO
-    den importer fuer den dax fertig machen:
-    - die ids von onvista sowie finanzen.net ergaenzen
-    -- dazu einfach mit den ISINs die einzelnen seiten der aktien aufrufen und die info extrahieren
-    -- is large cap am besten aus marktkapitalisierung onvista auslesen
-    - excehption handling ergaenzen, bei fatalen fehlern
-    '''
+    

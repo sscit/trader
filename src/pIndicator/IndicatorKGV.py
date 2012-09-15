@@ -32,7 +32,7 @@ class CIndicatorKGVMean(CIndicator):
         
         if ekr == "NA":
             result = 0
-            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfuegbar"
         elif ekr < 12:
             result = 1
         elif (ekr >= 12 and ekr <= 16):
@@ -58,19 +58,19 @@ class CIndicatorKGV(CIndicator):
         '''
         
         if stock in self.__StockDict:
-            return self.__StockDict[stock]
-            
-        ekr = self.__Onvista.getKGVAktJahr(stock)
-        self.__StockDict[stock] = ekr
+            kgv = self.__StockDict[stock]
+        else:
+            kgv = self.__Onvista.getKGVAktJahr(stock)
+            self.__StockDict[stock] = kgv      
         
         result = 0
         
-        if ekr == "NA":
+        if kgv == "NA":
             result = 0
-            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfügbar"
-        elif ekr < 12:
+            print "Warnung: " + self._Name + ": " + stock.Name + ": Wert nicht verfuegbar"
+        elif kgv < 12:
             result = 1
-        elif (ekr >= 12 and ekr <= 16):
+        elif (kgv >= 12 and kgv <= 16):
             result = 0
         else:
             result = -1
