@@ -10,7 +10,11 @@ class CImporter(object):
 
 
     def __init__(self):
+        self._strIndexFinanzenNet = "undef"
         pass
+    
+    def getName(self):
+        return self._strIndexFinanzenNet
     
     def getListOfStocks(self):    
         pass

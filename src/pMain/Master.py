@@ -9,12 +9,18 @@ necessary packages:
 -- download from http://stackoverflow.com/questions/3520826/installing-libxml2-on-python-2-7-windows
 - installation of libxml2dom
 -- http://mail.python.org/pipermail/xml-sig/2005-December/011407.html
+- installation of xlwt 
+-- http://www.python-excel.org/
 
 '''
-from pImport.ImporterDummy import CImporterDummy
-from pImport.ImporterDAX import CImporterDAX
+from pImport.ImporterTECDAX import *
+from pImport.ImporterDAX import *
+from pImport.ImporterMDAX import *
+from pImport.ImporterATX import *
+from pImport.ImporterEuroStoxx import CImporterEuroStoxx50
 from Slave import CSlave
 from pPresenter.PresenterConsole import CPresenterConsole
+from pPresenter.PresenterExcel import CPresenterExcel
 
 from pIndicator.Indicator3MonatsReversal import CIndicator3MonatsReversal
 from pIndicator.IndicatorEbit import CIndicatorEbit
@@ -28,8 +34,9 @@ from pIndicator.IndicatorKursVor6M import CIndicatorKursVor6M
 
 if __name__ == '__main__':
     
-    imp = CImporterDAX()
-    present = CPresenterConsole()
+    imp = CImporterATX()
+    #imp = CImporterMDAX()
+    present = CPresenterExcel()
     sl = CSlave()
     
     listIndicator = list()
@@ -50,10 +57,11 @@ if __name__ == '__main__':
     '''
         TODO
               
-        - weitere presenter schreiben (z.b. excel)
-        -- die asugabe soll als schöne excel tabelle geschrieben werden, mit den punkten für alle Indikatoren
+        - presenter excel noch tunen, mit farben oder so
         - restliche indikatoren machen
         . auch andere indizes mit reinbringen
+        -- für FTSE100 einfach folgende url nehmen http://www.finanzen.net/index/FTSE_100@intpagenr_2 und z.b. alles hinter dem "@"
+            in irngend einer form in ein array packe? damit N seiten abgerufen werden beim einlesen
         - mal alle indikatoren durchgehen und genau dokumentieren und verstehen, was die jetzt eigentlich machen
         
         - TESTS machen, welche alle indikatoren testen und die einzelnen interface klassen

@@ -9,15 +9,15 @@ from pDataInterface.FinanzenNet import CFinanzenNet
 from pDataInterface.Onvista import COnvista
 from pImport.Importer import CImporter
 
-class CImporterDAX(CImporter):
+class CImporterMDAX(CImporter):
 
     def __init__(self):
         self.__FN = CFinanzenNet()
         self.__Onvista= COnvista()
         self.__StockList = list()
         
-        self.__AnzahlAktienInIndex = 30
-        self._strIndexFinanzenNet = "DAX"
+        self.__AnzahlAktienInIndex = 50
+        self._strIndexFinanzenNet = "MDAX"
         self.__strBoerseFinanzenNet = "FSE"
         
     def getListOfStocks(self):
@@ -42,9 +42,9 @@ class CImporterDAX(CImporter):
     
 
 if __name__ == '__main__':
-    xx = CImporterDAX()
+    xx = CImporterMDAX()
      
-    d = CStock("BASF11", "BASF", 59905, 81490, 1, "FSE", "DAX")
+    
     
     a = xx.getListOfStocks()
     

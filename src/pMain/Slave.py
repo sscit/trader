@@ -43,7 +43,7 @@ class CSlave(object):
         print "Verarbeitung ENDE ....."    
         print ""
         
-        Presenter.printData(l, pointList)
+        Presenter.printData(l, pointList, listIndicator, Importer)
         
         
         

@@ -7,7 +7,8 @@ from pTool.WebConnect import CWebConnect
 from datetime import timedelta, date
 import time, libxml2dom, datetime
 from pData.Stock import CStock
-import string, traceback
+import string, traceback, re
+
 
 class CFinanzenNet(object):
     
@@ -97,6 +98,9 @@ class CFinanzenNet(object):
         if len(ISIN) != 12:
             return 0
         
+        if not (re.match("^[A-Za-z0-9]*$", ISIN)):
+            return 0
+        
         ISINNew = str(ISIN)
         letters = string.uppercase
         index = range(0, len(letters))
@@ -141,7 +145,7 @@ class CFinanzenNet(object):
                 
         self.AktieList = [0,0,0,0]
         
-        self.KBV = 0
+        self.KBV = "NA"
         
     def __getDataForIndex(self, stock):
         t1 = date.today()
@@ -264,7 +268,7 @@ class CFinanzenNet(object):
         for i in td_elements:
             data = i.textContent
             
-            if self.KBV == 0 and data.find("KBV") > -1 and data.find("title=\"Kurs/Buchungs"):
+            if self.KBV == "NA" and data.find("KBV") > -1 and data.find("title=\"Kurs/Buchungs"):
                 self.KBV = float( td_elements[c+1].textContent.replace(",", ".") )
                 
             c = c + 1

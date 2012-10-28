@@ -20,15 +20,15 @@ class CPresenterConsole(CPresenter):
         Constructor
         '''
         
-    def printData(self, StockList, PointList):
+    def printData(self, StockList, PointList, IndicatorList, Importer):
         
         finanzenNet = CFinanzenNet()
         
-        print "Aktie \t Punkte \t KBV"
+        print "Aktie \t ISIN \t Punkte \t KBV"
         
         c = 0
         for i in StockList:
-            print i.Name + " \t " + str(PointList[c]) + " \t\t " + str(finanzenNet.getKBV(i))  
+            print i.Name + " \t " +  str(i.ISIN) + " \t " + str(PointList[c]) + " \t " + str(finanzenNet.getKBV(i))  
             c =c + 1
         
 

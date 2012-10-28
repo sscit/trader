@@ -113,14 +113,16 @@ class COnvista(object):
                 if (data == "KGV"):
                     try:
                         self.__KGVAktJahr = float( td_elements[c+1].textContent.replace(",", ".") )
+                    except ValueError:
+                        self.__KGVAktJahr = "NA"
                         
+                    try:    
                         summe = 0
                         for j in {1,2,3,4,5}:
                             summe += float(td_elements[c+j].textContent.replace(",",".")) 
                         self.__KGVMean5Years = summe / 5
                     except ValueError:
                         self.__KGVMean5Years = "NA"
-                        self.__KGVAktJahr = "NA"
                         
                 if (data == "Eigenkapitalquote in %"):
                     try:

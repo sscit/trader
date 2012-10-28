@@ -17,6 +17,6 @@ class CPresenter(object):
         Constructor
         '''
     
-    def printData(self, StockList, PointList):
+    def printData(self, StockList, PointList, IndicatorList, Importer):
         pass
         
