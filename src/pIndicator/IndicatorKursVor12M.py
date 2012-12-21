@@ -20,14 +20,19 @@ class CIndicatorKursVor12M(CIndicator):
             
         self.__FinanzenNet.parseFinanzenNet(stock)
         
-        ratio =  self.__FinanzenNet.AktienkursHeute / self.__FinanzenNet.AktienkursVor12Monaten
+        if( self.__FinanzenNet.AktienkursVor12Monaten > 0):
         
-        if ratio > 1.05:
-            result = 1
-        elif ratio < 0.95:
-            result = -1
+            ratio =  self.__FinanzenNet.AktienkursHeute / self.__FinanzenNet.AktienkursVor12Monaten
+            
+            if ratio > 1.05:
+                result = 1
+            elif ratio < 0.95:
+                result = -1
+            else:
+                result = 0 
+                
         else:
-            result = 0 
+            result = 0
         
         self.__StockDict[stock] = result      
         

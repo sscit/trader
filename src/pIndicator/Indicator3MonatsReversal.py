@@ -27,22 +27,25 @@ class CIndicator3MonatsReversal(CIndicator):
         kleiner = 0
         groesser = 0
         
-        for i in [0,1,2]:
-            aktieAenderung[i] = self.__FinanzenNet.AktieList[i] / self.__FinanzenNet.AktieList[i+1]
-            indexAenderung[i] = self.__FinanzenNet.IndexList[i] / self.__FinanzenNet.IndexList[i+1]
-            
-            if aktieAenderung[i] < indexAenderung[i]:
-                kleiner = kleiner + 1
-            elif aktieAenderung[i] > indexAenderung[i]:
-                groesser = groesser + 1
-            
-        if kleiner == len(aktieAenderung):
-            result = 1
-        elif groesser == len(aktieAenderung):
-            result = -1
+        if(self.__FinanzenNet.AktieList[3] > 0):
+            for i in [0,1,2]:
+                aktieAenderung[i] = self.__FinanzenNet.AktieList[i] / self.__FinanzenNet.AktieList[i+1]
+                indexAenderung[i] = self.__FinanzenNet.IndexList[i] / self.__FinanzenNet.IndexList[i+1]
+                
+                if aktieAenderung[i] < indexAenderung[i]:
+                    kleiner = kleiner + 1
+                elif aktieAenderung[i] > indexAenderung[i]:
+                    groesser = groesser + 1
+                
+            if kleiner == len(aktieAenderung):
+                result = 1
+            elif groesser == len(aktieAenderung):
+                result = -1
+            else:
+                result = 0
         else:
-            result = 0  
-        
+            result = 0
+                  
         self.__StockDict[stock] = result      
         
         return result   

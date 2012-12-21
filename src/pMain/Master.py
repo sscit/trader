@@ -34,8 +34,8 @@ from pIndicator.IndicatorKursVor6M import CIndicatorKursVor6M
 
 if __name__ == '__main__':
     
-    imp = CImporterATX()
-    #imp = CImporterMDAX()
+    #imp = CImporterATX()
+    imp = CImporterMDAX()
     present = CPresenterExcel()
     sl = CSlave()
     
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         - presenter excel noch tunen, mit farben oder so
         - restliche indikatoren machen
         . auch andere indizes mit reinbringen
-        -- für FTSE100 einfach folgende url nehmen http://www.finanzen.net/index/FTSE_100@intpagenr_2 und z.b. alles hinter dem "@"
+        -- fuer FTSE100 einfach folgende url nehmen http://www.finanzen.net/index/FTSE_100@intpagenr_2 und z.b. alles hinter dem "@"
             in irngend einer form in ein array packe? damit N seiten abgerufen werden beim einlesen
         - mal alle indikatoren durchgehen und genau dokumentieren und verstehen, was die jetzt eigentlich machen
         
