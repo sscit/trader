@@ -34,8 +34,8 @@ from pIndicator.IndicatorKursVor6M import CIndicatorKursVor6M
 
 if __name__ == '__main__':
     
-    #imp = CImporterATX()
-    imp = CImporterMDAX()
+    imp = CImporterATX()
+    #imp = CImporterTECDAX()
     present = CPresenterExcel()
     sl = CSlave()
     

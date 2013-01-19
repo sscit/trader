@@ -4,6 +4,8 @@ Created on 25.08.2012
 @author: Stefan
 
 This indicator evaluates Eigenkapitalrendite / RoE for the current year
+Source: Onvista
+
 '''
 from pIndicator.Indicator import CIndicator
 from pDataInterface.Onvista import COnvista
